@@ -51,6 +51,36 @@ def delete(post_id):
         json.dump(blogentries, fileobj, indent=2)
     return redirect(url_for("index"))
 
+@app.route("/update/<int:post_id>", methods=["GET", "POST"])
+def update(post_id):
+    blogentries = load_file("data_storage.json")
+    index_of_post = None
+    for i, entry in enumerate(blogentries):
+        if entry["id"] == post_id:
+            index_of_post = i
+            break
+
+    if index_of_post is None:
+        return "Post not found", 404
+
+    if request.method == "POST":
+        author = request.form.get("author")
+        title = request.form.get("title")
+        content = request.form.get("content")
+
+        if author is not None and author != "":
+            blogentries[index_of_post]["author"] = author
+        if title is not None and title != "":
+            blogentries[index_of_post]["title"] = title
+        if content is not None and content != "":
+            blogentries[index_of_post]["content"] = content
+
+        with open("data_storage.json", "w") as f:
+            json.dump(blogentries, f, indent=2)
+
+        return redirect(url_for("index"))
+
+    return render_template("update.html", post=blogentries[index_of_post])
 
 
 
