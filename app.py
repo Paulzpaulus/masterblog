@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for
 import json
+import os
 
 app = Flask(__name__)
 
@@ -38,6 +39,21 @@ def add():
             json.dump(blogentries, fileobj, indent= 2)
         return redirect(url_for('index'))
     return render_template("add.html")
+
+
+
+
+@app.route("/delete/<int:post_id>")
+def delete(post_id):
+    blogentries = load_file("data_storage.json")
+    blogentries = [entry for entry in blogentries if entry["id"] != post_id]
+    with open("data_storage.json", "w") as fileobj:
+        json.dump(blogentries, fileobj, indent=2)
+    return redirect(url_for("index"))
+
+
+
+
 
 
 if __name__ == '__main__':
